@@ -6,7 +6,7 @@ function initPage() {
     $('#name').focus();
     $('#other-title').hide();
     $('#colors-js-puns').hide();
-    $('.activities').append('<label>Total cost for selected activities: $<span id="displayCost"></span></label>');
+    $('.activities').append('<label>Total cost for selected activities: <strong>$<span id="displayCost"></span></strong></label>');
     $('.activities').append('<label id="test"></label>');
     $('#displayCost').html(totalCost);
 }
@@ -60,7 +60,7 @@ $('.container').on('click', (e) => {
         } 
 });
 
-$('.activities').on('change', (e) => {
+$('.activities').on('click', (e) => {
     const act = $(e.target).parent().parent();
     activity = $(act)[0] === $('.activities')[0];
     
@@ -68,14 +68,54 @@ $('.activities').on('change', (e) => {
            
             
             console.log('Activities clicked');
-            console.log($(e.target[name="all"]));
+            console.log($(e.target).is(':checked'));
             console.log(totalCost);
+            console.log($('input[name="js-frameworks"]').is(':checked'));
+            
             if($(e.target).is(':checked')) {
                 $(e.target).attr('name') === 'all' ? totalCost += 200 : totalCost += 100; 
                 $('#displayCost').html(totalCost);
+                
+                if ($(e.target).attr('name') === 'js-frameworks' ){
+                    console.log('set disabled')
+                    $('input[name="express"]').attr('disabled', true);
+                    $('input[name="express"]').parent().css('color', 'grey');
+                } else if ($(e.target).attr('name') === 'express' ) {
+                    console.log('set disabled')
+                    $('input[name="js-frameworks"]').attr('disabled', true);
+                    $('input[name="js-frameworks"]').parent().css('color', 'grey');
+                }
+
+                if ($(e.target).attr('name') === 'js-libs' ){
+                    console.log('set disabled')
+                    $('input[name="node"]').attr('disabled', true);
+                    $('input[name="node"]').parent().css('color', 'grey');
+                } else if ($(e.target).attr('name') === 'node' ) {
+                    console.log('set disabled')
+                    $('input[name="js-libs"]').attr('disabled', true);
+                    $('input[name="js-libs"]').parent().css('color', 'grey');
+                }
+
+
             } else {
                 $(e.target).attr('name') === 'all' ? totalCost += -200 : totalCost += -100; 
                 $('#displayCost').html(totalCost);
+                if ( $('input[name="js-frameworks"]').is(':checked') === false ) {
+                    $('input[name="express"]').removeAttr('disabled');
+                    $('input[name="express"]').parent().css('color', 'black');
+                }
+                    if ( $('input[name="express"]').is(':checked') === false ) {
+                    $('input[name="js-frameworks"]').removeAttr('disabled');
+                    $('input[name="js-frameworks"]').parent().css('color', 'black');
+                }
+                if ( $('input[name="js-libs"]').is(':checked') === false ) {
+                    $('input[name="node"]').removeAttr('disabled');
+                    $('input[name="node"]').parent().css('color', 'black');
+                }
+                    if ( $('input[name="node"]').is(':checked') === false ) {
+                    $('input[name="js-libs"]').removeAttr('disabled');
+                    $('input[name="js-libs"]').parent().css('color', 'black');
+               }
             }
           
             
