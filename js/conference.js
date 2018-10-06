@@ -1,6 +1,4 @@
 
-let totalCost = 0;
-
 
 function initPage() {
     $('#name').focus();
@@ -8,7 +6,7 @@ function initPage() {
     $('#colors-js-puns').hide();
     $('.activities').append('<label>Total cost for selected activities: <strong>$<span id="displayCost"></span></strong></label>');
     $('.activities').append('<label id="test"></label>');
-    $('#displayCost').html(totalCost);
+    $('#displayCost').html('0');
     $('#payment').val('credit card');
     $('#payment option[value="select_method"]').remove();
     $('#credit-card').next().attr('id','paypal').hide();
@@ -105,23 +103,33 @@ $('.container').on('click change keypress', (e) => {
     
 });
 
-$('.activities').on('click change', (e) => {
+function displayTotal () {
+    let totalCost = 0;
+    $('input[type=checkbox').each(function(i) {
+        if ($(this).is(':checked')) {
+            console.log($(this).is(':checked'));
+            console.log($(this));
+            $(this).attr('name') === 'all' ? totalCost += 200 : totalCost += 100;   
+        }
+        $('#displayCost').html(totalCost);
+    });
+}
+
+$('.activities').on('click keyup', (e) => {
     const act = $(e.target).parent().parent();
     activity = $(act)[0] === $('.activities')[0];
-    
+    displayTotal();
         if(activity) {
             $('#activityError').remove();
             $('.activities').css({'border-right':'none','border-color':'red'});
             
             console.log('Activities clicked');
             console.log($(e.target).is(':checked'));
-            console.log(totalCost);
+           
             console.log($('input[name="js-frameworks"]').is(':checked'));
             
             if($(e.target).is(':checked')) {
-                $(e.target).attr('name') === 'all' ? totalCost += 200 : totalCost += 100; 
-                $('#displayCost').html(totalCost);
-                
+                             
                 if ($(e.target).attr('name') === 'js-frameworks' ){
                     console.log('set disabled')
                     $('input[name="express"]').attr('disabled', true);
@@ -143,9 +151,8 @@ $('.activities').on('click change', (e) => {
                 }
 
 
-            } else {
-                $(e.target).attr('name') === 'all' ? totalCost += -200 : totalCost += -100; 
-                $('#displayCost').html(totalCost);
+            } else if($(e.target).is(':checked') === false) {
+          
                 if ( $('input[name="js-frameworks"]').is(':checked') === false ) {
                     $('input[name="express"]').removeAttr('disabled');
                     $('input[name="express"]').parent().css('color', 'black');
@@ -229,9 +236,12 @@ $('.activities').on('click change', (e) => {
             if( $('#cc-num').val() === '') {
                 e.preventDefault();
                 alert('No cc number entered');
+                $('#cc-num').prev().append('<span id="ccError" style="color:yellow"> Enter CC Number.</span>');
+                $('#cc-num').css('border-color', 'red');
+            } else if( $('#cc-num').val().length < 13 || $('#cc-num').val().length > 16) {
                 $('#cc-num').prev().append('<span id="ccError" style="color:yellow"> Between 13-16 numbers.</span>');
                 $('#cc-num').css('border-color', 'red');
-            }
+            } 
             if( $('#zip').val() === '') {
                 e.preventDefault();
                 alert('no zip code entered');
