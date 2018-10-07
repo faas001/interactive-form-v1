@@ -1,5 +1,8 @@
 # interactive-form-v1
-Fullstack JavaScript Techdegree project 3
+
+Demo at https://faas001.github.io/interactive-form-v1/
+
+Treehouse Fullstack JavaScript Techdegree project 3
 
 As part of the Treehouse Fullstack JavaScript Techdegree certification.
 
