@@ -1,5 +1,5 @@
 
-//setup the page on initial load to dynamically add/remove display elements from the HTML and set focus to the name input field.
+//function to setup the page on initial load to dynamically add/remove display elements from the HTML and set focus to the name input field.
 function initPage() {
     $('#name').focus();
     $('#other-title').hide();
@@ -11,7 +11,7 @@ function initPage() {
     $('#credit-card').next().attr('id','paypal').hide();
     $('#paypal').next().attr('id','bitcoin').hide();
    
-    $('#mail').prev().append('<span id="results" style="color:#f5ffa3"> &nbsp;</span>');
+    $('#mail').prev().append('<span id="results" style="color:#f5ffa3"></span>');
 }
 
 //this resets the display errors so they don't propagate on the page on multiple failed submits
@@ -31,6 +31,7 @@ function clearErrors() {
 }
 
 //straight up copy/pasted this from Stackoverflow top voted answer on email validation from user: rnevius
+//Essentially this creates a string to then compare to another string via RegExp test method returning a boolean result
 function validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
@@ -50,25 +51,25 @@ function realtimeValidate(email) {
             $('#results').css('color', 'green');
                  
      } else if (!results && email !== '') {
-            email += '&#10060';
+            email = '&nbsp;' + email + '&#10060';
             console.log(email);
             $('#results').html(email);
             $('#results').css('color', 'red');
     } 
 }
 
-
 //listen to the form for events to trigger functionality
-$('.container').on('click change keyup', (e) => {
+$('.container').on('click keyup', (e) => {
     
-    //
+    //This will clear the error message (if currently displayed) if the name field is not blank when it loses focus 
     $('#name').focusout(function () {
         if($('#name').val().length > 0) {
             $('#nameError').remove();
             $('#name').css('border-color', '#eae7dc');
         }
     });
-   
+
+    //This will clear the error message (if currently displayed) if the name field is not blank when it loses focus 
     $('#mail').focusout(function () {
         if($('#mail').val().length > 0) {
             $('#mailError').remove();
@@ -76,13 +77,10 @@ $('.container').on('click change keyup', (e) => {
         }
     });
 
-    
-    if(! realtimeValidate($('#mail').val())) {
-                
-        
-       
-        //console.log(e);
-        }
+    //validate email address in realtime if the target is the email input
+    if(e.target === $('#mail')[0]) {
+        realtimeValidate($('#mail').val())
+    }
           
    
         // Show the input text box if Other is selected for Job Role.   
@@ -101,8 +99,7 @@ $('.container').on('click change keyup', (e) => {
                 if ( $('#color option:selected').index() > 2 ) {
                     $('#color').val('cornflowerblue');
                 } 
-                //console.log($('select#design').val());
-              
+                            
                 $('#colors-js-puns').show();
                 $('#color option[value="cornflowerblue"]').show();
                 $('#color option[value="darkslategrey"]').show();
@@ -110,14 +107,12 @@ $('.container').on('click change keyup', (e) => {
                 $('#color option[value="tomato"]').hide();
                 $('#color option[value="steelblue"]').hide();
                 $('#color option[value="dimgrey"]').hide();
-                //console.log($('#color option:selected').index());
-               
+                               
             } else if ($('select#design').val() === 'heart js') {
                     if ( $('#color option:selected').index() < 3) {
                         $('#color').val('tomato');
                     } 
                 
-                    //console.log($('select#design').val());
                     $('#colors-js-puns').show();
                     $('#color option[value="cornflowerblue"]').hide();
                     $('#color option[value="darkslategrey"]').hide();
@@ -125,20 +120,21 @@ $('.container').on('click change keyup', (e) => {
                     $('#color option[value="tomato"]').show();
                     $('#color option[value="steelblue"]').show();
                     $('#color option[value="dimgrey"]').show();
-                  //  $('#color').val('tomato');
+                
             } else {
-                $('#colors-js-puns').hide();
-                       
+                $('#colors-js-puns').hide();                   
              }
         }
         
+        //This will clear the error message (if currently displayed) if the cc-num field is not blank when it loses focus
         $('#cc-num').focusout(function () {
             if($('#cc-num').val().length > 0) {
                 $('#ccError').remove();
                 $('#cc-num').css('border-color', '#eae7dc');
             }
         });
-
+        
+        //This will clear the error message (if currently displayed) if the zip field is not blank when it loses focus
         $('#zip').focusout(function () {
             if($('#zip').val().length > 0) {
                 $('#zipError').remove();
@@ -146,23 +142,21 @@ $('.container').on('click change keyup', (e) => {
             }
         });
 
+        //This will clear the error message (if currently displayed) if the cvv field is not blank when it loses focus
         $('#cvv').focusout(function () {
             if($('#cvv').val().length > 0) {
                 $('#cvvError').remove();
                 $('#cvv').css('border-color', '#eae7dc');
             }
-        });
-
-        
-            
+        });           
 });
 
+//this will display the running total of all options selected. Everytime an option is selected the total cost is recalculated and displayed.
 function displayTotal () {
     let totalCost = 0;
+    //loop through each of the checboxes and add to totalCost if it is checked
     $('input[type=checkbox').each(function(i) {
         if ($(this).is(':checked')) {
-            //console.log($(this).is(':checked'));
-            //console.log($(this));
             $(this).attr('name') === 'all' ? totalCost += 200 : totalCost += 100;   
         }
         $('#displayCost').html(totalCost);
@@ -173,8 +167,10 @@ $('.activities').on('click keyup', (e) => {
     const act = $(e.target).parent().parent();
     activity = $(act)[0] === $('.activities')[0];
     displayTotal();
+        
         if(activity) {
             
+            //if form was submitted once with no activity selected this will hide or show the error on subsequent edits depending if an option is selected
             if ($('#activityError')) {
                 if ($('input[type="checkbox"]').is(':checked')) { 
                      $('#activityError').hide();
@@ -184,29 +180,27 @@ $('.activities').on('click keyup', (e) => {
                     $('.activities').css({'border-right':'2px solid','border-color':'#f96666'});
                 }
             }
-            //console.log('Activities clicked');
-            //console.log($(e.target).is(':checked'));
-           
-            //console.log($('input[name="js-frameworks"]').is(':checked'));
             
+            //The below checks the status of checked items 
+            //It will disable conflicting conference timeslots and visually indicate on screen 
             if($(e.target).is(':checked')) {
                              
                 if ($(e.target).attr('name') === 'js-frameworks' ){
-                    //console.log('set disabled')
+                   
                     $('input[name="express"]').attr('disabled', true);
                     $('input[name="express"]').parent().css('color', 'grey');
                 } else if ($(e.target).attr('name') === 'express' ) {
-                    //console.log('set disabled')
+                    
                     $('input[name="js-frameworks"]').attr('disabled', true);
                     $('input[name="js-frameworks"]').parent().css('color', 'grey');
                 }
 
                 if ($(e.target).attr('name') === 'js-libs' ){
-                    //console.log('set disabled')
+                    
                     $('input[name="node"]').attr('disabled', true);
                     $('input[name="node"]').parent().css('color', 'grey');
                 } else if ($(e.target).attr('name') === 'node' ) {
-                    //console.log('set disabled')
+                  
                     $('input[name="js-libs"]').attr('disabled', true);
                     $('input[name="js-libs"]').parent().css('color', 'grey');
                 }
@@ -235,89 +229,82 @@ $('.activities').on('click keyup', (e) => {
         }
 });       
 
-    $('#payment').on('change', (e) => {
-        if (e.target === $('#payment')[0]) {
-            //console.log('payment processing');
-            //console.log($(e.target).val());
+//below will display the correct payment method input text boxes/html text depending on option selected.
+$('#payment').on('change', (e) => {
+    if (e.target === $('#payment')[0]) {
+        
+        if ($(e.target).val() === 'bitcoin') {
+            $('#bitcoin').show();
+            $('#credit-card').hide();
+            $('#paypal').hide();
+        } else if ($(e.target).val() === 'paypal') {
+            $('#bitcoin').hide();
+            $('#credit-card').hide();
+            $('#paypal').show();
+        } else {
+            $('#bitcoin').hide();
+            $('#credit-card').show();
+            $('#paypal').hide();
+        }   
+    }   
+});
+   
+//below is submit form error validation, if any of the below conditions true the default form submission is stopped
+$('button').on('click', (e) => {
+    //clear any error messages still on screen as they will be recreated below if necessary
+    clearErrors();
 
-            if ($(e.target).val() === 'bitcoin') {
-                $('#bitcoin').show();
-                $('#credit-card').hide();
-                $('#paypal').hide();
-            } else if ($(e.target).val() === 'paypal') {
-                $('#bitcoin').hide();
-                $('#credit-card').hide();
-                $('#paypal').show();
-            } else {
-                $('#bitcoin').hide();
-                $('#credit-card').show();
-                $('#paypal').hide();
-            }
-            
-        }
-       
-    });
-
-    
-
-    $('button').on('click', (e) => {
-        clearErrors();
-        if(! $('#name').val()) {
+    //if Name field is blank create and display error message in yellow into label HTML and highlight input text in red
+    if(! $('#name').val()) {
         e.preventDefault();
-        //alert('Name field is blank');
         $('#name').prev().append('<span id="nameError" style="color:#f5ffa3"> Please enter a name so that we know who to register!</span>');
         $('#name').css('border-color', '#f96666');
-        //console.log(e);
+    } 
+
+    //if email field is blank create and display error message in yellow into label HTML and highlight input text in red
+    if(! validateEmail($('#mail').val())) {
+        e.preventDefault();
+        $('#mail').prev().append('<span id="mailError" style="color:#f5ffa3"> Please enter a valid email address.</span>');
+        $('#mail').css('border-color', '#f96666');
+        
+    }
+
+    //if there is no activity selected, create and display error message in yellow into legend HTML and create red border at right to visually indicate
+    if ( ! $('input[type="checkbox"]').is(':checked')) { 
+        e.preventDefault();
+        $('.activities').children('legend').append('<span id="activityError" style="color:#f5ffa3"> Select at least one option. No free rides! =)</span>');
+        $('.activities').css({'border-right':'2px solid','border-color':'#f96666'});
+    }
+        
+    //if payment type selected is credit card field is blank create and display error message in yellow into label HTML and highlight input text in red
+    if( $('#payment').val() === 'credit card') {
+        
+        //if credit card is blank it updates the label HTML to prompt to enter a CC number, if it's not between 13-16 chars it prompts to enter between 13-16
+        if( $('#cc-num').val() === '') {
+            e.preventDefault();
+            $('#cc-num').prev().append('<span id="ccError" style="color:#f5ffa3"> Enter CC Number.</span>');
+            $('#cc-num').css('border-color', '#f96666');
+        } else if( $('#cc-num').val().length < 13 || $('#cc-num').val().length > 16) {
+            e.preventDefault();
+            $('#cc-num').prev().append('<span id="ccError" style="color:#f5ffa3"> Between 13-16 numbers.</span>');
+            $('#cc-num').css('border-color', '#f96666');
         } 
 
-        if(! validateEmail($('#mail').val())) {
-            e.preventDefault();
-            //alert('Email field is not valid');
-            $('#mail').prev().append('<span id="mailError" style="color:#f5ffa3"> Please enter a valid email address.</span>');
-            $('#mail').css('border-color', '#f96666');
-            //console.log(e);
-            }
-
-        if ( ! $('input[type="checkbox"]').is(':checked')) { 
-            e.preventDefault();
-            //alert('At least one activity NOT checked');
-            //console.log('No activity selected');
-            $('.activities').children('legend').append('<span id="activityError" style="color:#f5ffa3"> Select at least one option. No free rides! =)</span>');
-            $('.activities').css({'border-right':'2px solid','border-color':'#f96666'});
-            }
-          
-       // console.log($('#cc-num').val())
-        if( $('#payment').val() === 'credit card') {
-            if( $('#cc-num').val() === '') {
-                e.preventDefault();
-               // alert('No cc number entered');
-                $('#cc-num').prev().append('<span id="ccError" style="color:#f5ffa3"> Enter CC Number.</span>');
-                $('#cc-num').css('border-color', '#f96666');
-            } else if( $('#cc-num').val().length < 13 || $('#cc-num').val().length > 16) {
-                e.preventDefault();
-                $('#cc-num').prev().append('<span id="ccError" style="color:#f5ffa3"> Between 13-16 numbers.</span>');
-                $('#cc-num').css('border-color', '#f96666');
-            } 
-            if( $('#zip').val() === '') {
-                e.preventDefault();
-               // alert('no zip code entered');
-                $('#zip').prev().append('<span id="zipError" style="color:#f5ffa3"> Required</span>');
-                $('#zip').css('border-color', '#f96666');
-            }
-            if( $('#cvv').val() === '') {
-                e.preventDefault();
-               
-                $('#cvv').prev().append('<span id="cvvError" style="color:#f5ffa3"> 3-digit only</span>');
-                $('#cvv').css('border-color', '#f96666');
-            }
+        //if zip field is blank create and display error message in yellow into label HTML and highlight input text in red
+        if( $('#zip').val() === '') {
+            e.preventDefault();         
+            $('#zip').prev().append('<span id="zipError" style="color:#f5ffa3"> Required</span>');
+            $('#zip').css('border-color', '#f96666');
         }
 
-    });
-
-
-
-
-
+        //if cvv field length is not equal to 3 create and display error message in yellow into label HTML and highlight input text in red
+        if( $('#cvv').val().length !== 3) {
+            e.preventDefault();
+            $('#cvv').prev().append('<span id="cvvError" style="color:#f5ffa3"> 3-digit only</span>');
+            $('#cvv').css('border-color', '#f96666');
+        }
+    }
+});
 
 initPage();
 
