@@ -9,13 +9,13 @@
 body,
 input,
 button {
- font-family: 'Roboto', sans-serif;
+ font-family: 'Acme', sans-serif;
 }
 
 body {
   font: 1em/1.5;
-  color: #184f68;
-	background: #accbd9;
+  color: #68635d;
+	background: #eae7dc;
 }
 
 header {
@@ -23,7 +23,7 @@ header {
 }
 
 h1 {
-	font-size: 2.5em;
+	font-size: 3.5em;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
 	margin: 0;
 }
@@ -38,7 +38,7 @@ a {
 
 form {
 	padding: .875em 1.875em 1.875em;
-	background: #85b5ca;
+	background: #d8c3a5;
 }
 
 fieldset,
@@ -57,10 +57,14 @@ button {
 	font-size: 1.25em;	
 }
 
+button:focus {
+	outline: 1px solid #f8b044;
+}
+
 legend {
 	font-weight: 500;
 	padding-top: .5em;
-	border-top: 2px solid #679cb3;
+	border-top: 2px solid #f8b044;
 	margin-bottom: 1.125em;
 }
 
@@ -78,39 +82,46 @@ label {
 
 input,
 select {
-	margin-bottom: 1.125em;	
+	margin-bottom: 1.125em;
+	
+}
+
+input,
+select:focus {
+	outline: 1px solid #f8b044;
 }
 
 input {
 	font-size: 1em;
 	font-weight: 500;
-	padding: .8em;
-	background: #c1deeb;
-	border: 2px solid #c1deeb;
+	padding: .4em;
+	background: #eae7dc;
+	border: 2px solid #eae7dc;
 	outline: none;
 }
 
 input:focus {
 	background: #fff;
-	border-color: #5e97b0;
+	border-color: #d8c3a5;
 	transition: border-color .4s, background-color .4s;
 }
 
 input[type="checkbox"],
 input[type="radio"] {
 	display: inline-block;
+	
 }
 
 button {
 	color: #fff;
 	padding: .55em 1.25em;
-	background: #22627e;
+	background: #68635d;
 	margin: 1.25em 0 .5em;
 	cursor: pointer;
 }
 
 button:hover {
-	background: #184c62;
+	background: #44423f;
 }
 
 /* ================================= 
