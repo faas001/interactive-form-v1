@@ -1,6 +1,7 @@
 
 //function to setup the page on initial load to dynamically add/remove display elements from the HTML and set focus to the name input field.
 function initPage() {
+       
     $('#name').focus();
     $('#other-title').hide();
     $('#colors-js-puns').hide();
@@ -10,7 +11,6 @@ function initPage() {
     $('#payment option[value="select_method"]').remove();
     $('#credit-card').next().attr('id','paypal').hide();
     $('#paypal').next().attr('id','bitcoin').hide();
-   
     $('#mail').prev().append('<span id="results" style="color:#f5ffa3"></span>');
 }
 
@@ -28,6 +28,10 @@ function clearErrors() {
     $('#zip').css('border-color', '#eae7dc');
     $('#cvvError').remove();
     $('#cvv').css('border-color', '#eae7dc');
+    $('#yearError').remove();
+    $('#exp-year').css('border-color', '#eae7dc');
+    $('#monthError').remove();
+    $('#exp-month').css('border-color', '#eae7dc');
 }
 
 //straight up copy/pasted this from Stackoverflow top voted answer on email validation from user: rnevius
@@ -49,11 +53,13 @@ function realtimeValidate(email) {
             email = '&nbsp;'+ email + '&#9989';
             $('#results').html(email);
             $('#results').css('color', 'green');
+            $('#results').fadeOut(8000);
                  
      } else if (!results && email !== '') {
             email = '&nbsp;' + email + '&#10060';
             console.log(email);
             $('#results').html(email);
+            $('#results').show();
             $('#results').css('color', 'red');
     } 
 }
@@ -74,6 +80,14 @@ $('.container').on('click keyup', (e) => {
         if($('#mail').val().length > 0) {
             $('#mailError').remove();
             $('#mail').css('border-color', '#eae7dc');
+        }
+    });
+
+    //clear the other title error message if corrected
+    $('#other-title').focusout(function () {
+        if($('#other-title').val().length > 0) {
+            
+            $('#other-title').css('border-color', '#eae7dc');
         }
     });
 
@@ -148,7 +162,19 @@ $('.container').on('click keyup', (e) => {
                 $('#cvvError').remove();
                 $('#cvv').css('border-color', '#eae7dc');
             }
-        });           
+        });      
+
+        //This will clear the error message (if currently displayed) if the month/year field is selected
+        if(e.target === $('#exp-year')[0]) {
+                $('#yearError').remove();
+                $('#exp-year').css('border-color', '#eae7dc');
+        }
+        if(e.target === $('#exp-month')[0]) {      
+                $('#monthError').remove();
+                $('#exp-month').css('border-color', '#eae7dc');
+            }
+        
+           
 });
 
 //this will display the running total of all options selected. Everytime an option is selected the total cost is recalculated and displayed.
@@ -169,9 +195,10 @@ $('.activities').on('click keyup', (e) => {
     displayTotal();
         
         if(activity) {
-            
+console.log($('#activityError'));
+
             //if form was submitted once with no activity selected this will hide or show the error on subsequent edits depending if an option is selected
-            if ($('#activityError')) {
+            if ($('#activityError').text() === ' Select at least one option. No free rides! =)') {
                 if ($('input[type="checkbox"]').is(':checked')) { 
                      $('#activityError').hide();
                      $('.activities').css('border-right','none');
@@ -251,12 +278,14 @@ $('#payment').on('change', (e) => {
    
 //below is submit form error validation, if any of the below conditions true the default form submission is stopped
 $('button').on('click', (e) => {
+    let errorFocus = '';
     //clear any error messages still on screen as they will be recreated below if necessary
     clearErrors();
 
     //if Name field is blank create and display error message in yellow into label HTML and highlight input text in red
     if(! $('#name').val()) {
         e.preventDefault();
+        errorFocus = $('#name').focus();
         $('#name').prev().append('<span id="nameError" style="color:#f5ffa3"> Please enter a name so that we know who to register!</span>');
         $('#name').css('border-color', '#f96666');
     } 
@@ -266,7 +295,20 @@ $('button').on('click', (e) => {
         e.preventDefault();
         $('#mail').prev().append('<span id="mailError" style="color:#f5ffa3"> Please enter a valid email address.</span>');
         $('#mail').css('border-color', '#f96666');
-        
+        if (errorFocus === '') { 
+            errorFocus = $('#mail').focus() 
+        };
+    }
+
+    if ($('select#title').val() === 'other') {
+        if ($('#other-title').val() === '') {
+            e.preventDefault();
+            $('#other-title').attr('placeholder', 'Please enter a job role. Be creative.');
+            $('#other-title').css('border-color', '#f96666');
+            if (errorFocus === '') { 
+                errorFocus = $('#other-title').focus() 
+            };
+        }
     }
 
     //if there is no activity selected, create and display error message in yellow into legend HTML and create red border at right to visually indicate
@@ -274,36 +316,58 @@ $('button').on('click', (e) => {
         e.preventDefault();
         $('.activities').children('legend').append('<span id="activityError" style="color:#f5ffa3"> Select at least one option. No free rides! =)</span>');
         $('.activities').css({'border-right':'2px solid','border-color':'#f96666'});
+        if (errorFocus === '') { 
+            errorFocus = $('.activities').focus() 
+        };
     }
         
     //if payment type selected is credit card field is blank create and display error message in yellow into label HTML and highlight input text in red
-    if( $('#payment').val() === 'credit card') {
+    if ( $('#payment').val() === 'credit card') {
         
         //if credit card is blank it updates the label HTML to prompt to enter a CC number, if it's not between 13-16 chars it prompts to enter between 13-16
-        if( $('#cc-num').val() === '') {
+        if ( $('#cc-num').val() === '') {
             e.preventDefault();
             $('#cc-num').prev().append('<span id="ccError" style="color:#f5ffa3"> Enter CC Number.</span>');
             $('#cc-num').css('border-color', '#f96666');
-        } else if( $('#cc-num').val().length < 13 || $('#cc-num').val().length > 16) {
+        } else if( $('#cc-num').val().length < 13 || $('#cc-num').val().length > 16 || ! $.isNumeric($('#cc-num').val())) {
             e.preventDefault();
             $('#cc-num').prev().append('<span id="ccError" style="color:#f5ffa3"> Between 13-16 numbers.</span>');
             $('#cc-num').css('border-color', '#f96666');
         } 
 
-        //if zip field is blank create and display error message in yellow into label HTML and highlight input text in red
-        if( $('#zip').val() === '') {
+        //if zip field is not 5 digits create and display error message in yellow into label HTML and highlight input text in red
+        if ( $('#zip').val().length !== 5 || ! $.isNumeric($('#zip').val()) ) {
             e.preventDefault();         
-            $('#zip').prev().append('<span id="zipError" style="color:#f5ffa3"> Required</span>');
+            $('#zip').prev().append('<span id="zipError" style="color:#f5ffa3"> 5-digit only</span>');
             $('#zip').css('border-color', '#f96666');
         }
-
-        //if cvv field length is not equal to 3 create and display error message in yellow into label HTML and highlight input text in red
-        if( $('#cvv').val().length !== 3) {
+   
+        //if cvv field is not 3 digits create and display error message in yellow into label HTML and highlight input text in red
+        if ( $('#cvv').val().length !== 3 || ! $.isNumeric($('#cvv').val()) ) {
             e.preventDefault();
             $('#cvv').prev().append('<span id="cvvError" style="color:#f5ffa3"> 3-digit only</span>');
             $('#cvv').css('border-color', '#f96666');
         }
+        
+        let today = new Date();
+        let month = today.getMonth()+1;
+        let year = today.getFullYear();
+
+        if ($('#exp-year').val() <= year && $('#exp-month').val() < month) {
+            e.preventDefault();         
+            $('#exp-year').prev().append('<span id="yearError" style="color:#f5ffa3"> Exp is expired. Please check and correct.</span>');
+            $('#exp-year').css('border-color', '#f96666');
+            $('#exp-month').prev().append('<span id="monthError" style="color:#f5ffa3"> Exp is expired. Please check and correct.</span>');
+            $('#exp-month').css('border-color', '#f96666');
+        }
     }
+    
+    //Display succussful registration if no errors encountered.
+    if (errorFocus === '') {
+        $('form').html('<center><h2>Registration successfully completed.<br><br>Thank you and see you soon!<h2></center>').hide();
+        $('form').slideDown(1200);
+    }
+
 });
 
 initPage();
