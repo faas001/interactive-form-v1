@@ -329,10 +329,16 @@ $('button').on('click', (e) => {
             e.preventDefault();
             $('#cc-num').prev().append('<span id="ccError" style="color:#f5ffa3"> Enter CC Number.</span>');
             $('#cc-num').css('border-color', '#f96666');
+            if (errorFocus === '') { 
+                errorFocus = $('#cc-num').focus() 
+            };
         } else if( $('#cc-num').val().length < 13 || $('#cc-num').val().length > 16 || ! $.isNumeric($('#cc-num').val())) {
             e.preventDefault();
             $('#cc-num').prev().append('<span id="ccError" style="color:#f5ffa3"> Between 13-16 numbers.</span>');
             $('#cc-num').css('border-color', '#f96666');
+            if (errorFocus === '') { 
+                errorFocus = $('#cc-num').focus() 
+            };
         } 
 
         //if zip field is not 5 digits create and display error message in yellow into label HTML and highlight input text in red
@@ -340,6 +346,9 @@ $('button').on('click', (e) => {
             e.preventDefault();         
             $('#zip').prev().append('<span id="zipError" style="color:#f5ffa3"> 5-digit only</span>');
             $('#zip').css('border-color', '#f96666');
+            if (errorFocus === '') { 
+                errorFocus = $('#zip').focus() 
+            };
         }
    
         //if cvv field is not 3 digits create and display error message in yellow into label HTML and highlight input text in red
@@ -347,6 +356,9 @@ $('button').on('click', (e) => {
             e.preventDefault();
             $('#cvv').prev().append('<span id="cvvError" style="color:#f5ffa3"> 3-digit only</span>');
             $('#cvv').css('border-color', '#f96666');
+            if (errorFocus === '') { 
+                errorFocus = $('#cvv').focus() 
+            };
         }
         
         let today = new Date();
@@ -359,6 +371,9 @@ $('button').on('click', (e) => {
             $('#exp-year').css('border-color', '#f96666');
             $('#exp-month').prev().append('<span id="monthError" style="color:#f5ffa3"> Exp is expired. Please check and correct.</span>');
             $('#exp-month').css('border-color', '#f96666');
+            if (errorFocus === '') { 
+                errorFocus = $('#exp-month').focus() 
+            };
         }
     }
     
